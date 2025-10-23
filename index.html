@@ -1,0 +1,527 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Hacker's Mindset: Scenario Analysis</title>
+    <!-- Load Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Use Inter font -->
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap');
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #0d1117; /* Dark background */
+        }
+        .card {
+            background-color: #161b22; /* Slightly lighter dark background */
+            border: 1px solid #30363d;
+        }
+        .glow-button {
+            transition: all 0.3s ease;
+            box-shadow: 0 0 10px #22c55e;
+        }
+        .glow-button:hover {
+            box-shadow: 0 0 20px #10b981;
+        }
+        .loading-dot {
+            animation: bounce 1.4s infinite ease-in-out both;
+        }
+        .loading-dot:nth-child(1) { animation-delay: -0.32s; }
+        .loading-dot:nth-child(2) { animation-delay: -0.16s; }
+        @keyframes bounce {
+            0%, 80%, 100% { transform: scale(0); }
+            40% { transform: scale(1.0); }
+        }
+    </style>
+</head>
+<body class="p-4 md:p-8 text-gray-100 min-h-screen">
+
+    <div class="max-w-4xl mx-auto">
+        <header class="text-center mb-10 p-4 border-b border-green-700/50">
+            <h1 class="text-3xl md:text-5xl font-extrabold text-green-400">
+                The Hacker's Mindset
+            </h1>
+            <p class="mt-2 text-lg text-gray-400">Ethical Hacking Scenario Analysis for 9th Grade</p>
+        </header>
+
+        <!-- Scenario Card -->
+        <div class="card p-6 rounded-xl shadow-2xl mb-8">
+            <h2 class="text-2xl font-bold mb-4 text-orange-400">
+                The Scenario: The Principal's Password Problem (P3)
+            </h2>
+            <p class="text-gray-300 leading-relaxed">
+                The administration office at **Northwood High School** relies on a central server for student grades, medical records, and standardized test results. This server is located in a small, **unlocked closet** off the main hallway. The door has a window. The principal, Mr. Thompson, frequently writes his server login password, <code class="bg-red-800/30 text-red-300 p-1 rounded">Northwood123</code>, on a brightly colored **sticky note** attached to the monitor of his unlocked computer in his office, which is often empty. The school uses a **free, unmanaged Wi-Fi network** for all staff and students. Security updates for the server haven't been run in **three years** because "they always slow things down." Staff training on data safety consists of a single **5-minute video** shown during the first staff meeting of the year.
+            </p>
+        </div>
+
+        <!-- Submission Form -->
+        <div class="card p-6 rounded-xl shadow-2xl mb-8">
+            <h2 class="text-2xl font-bold mb-4 text-green-400">
+                Your Security Proposal
+            </h2>
+            <p id="saveStatus" class="text-sm text-gray-500 mb-6">
+                Status: Connecting...
+            </p>
+
+            <!-- Text Area for Vulnerabilities -->
+            <label for="vulnerabilities" class="block text-lg font-medium mb-2 text-yellow-300">
+                1. Vulnerabilities Found (The Hacker's Mindset)
+            </label>
+            <textarea id="vulnerabilities" rows="4" oninput="saveSubmission()" class="w-full p-3 rounded-lg bg-gray-700/50 border border-gray-600 focus:ring-green-500 focus:border-green-500 text-gray-200 mb-6" placeholder="List all the security gaps you found in the scenario (e.g., Physical Security, Weak Passwords, etc.)."></textarea>
+
+            <!-- Hardware Solution -->
+            <label for="hardware" class="block text-lg font-medium mb-2 text-blue-300">
+                2. Hardware Solution (Physical/Network Devices)
+            </label>
+            <textarea id="hardware" rows="3" oninput="saveSubmission()" class="w-full p-3 rounded-lg bg-gray-700/50 border border-gray-600 focus:ring-green-500 focus:border-green-500 text-gray-200 mb-6" placeholder="What physical security and network hardware should be added/changed? (e.g., server location, firewalls, etc.)"></textarea>
+
+            <!-- Software Solution -->
+            <label for="software" class="block text-lg font-medium mb-2 text-purple-300">
+                3. Software Solution (Applications/Configurations)
+            </label>
+            <textarea id="software" rows="3" oninput="saveSubmission()" class="w-full p-3 rounded-lg bg-gray-700/50 border border-gray-600 focus:ring-green-500 focus:border-green-500 text-gray-200 mb-6" placeholder="What security software or configurations are needed? (e.g., anti-virus, authentication, updates, network segmentation)"></textarea>
+
+            <!-- Procedural Solution -->
+            <label for="procedural" class="block text-lg font-medium mb-2 text-pink-300">
+                4. Procedural/Human Solution (Policies/Training)
+            </label>
+            <textarea id="procedural" rows="3" oninput="saveSubmission()" class="w-full p-3 rounded-lg bg-gray-700/50 border border-gray-600 focus:ring-green-500 focus:border-green-500 text-gray-200 mb-6" placeholder="What changes to policies, staff training, and protocols are essential to keep data safe?"></textarea>
+
+            <button onclick="analyzeSubmission()" id="submitButton" class="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-3 rounded-xl glow-button transition duration-300 flex items-center justify-center">
+                Submit for Tutor Feedback
+            </button>
+
+            <!-- UPDATED: Last Score Display with new goal -->
+            <div id="lastScoreDisplay" class="mt-4 text-center p-3 rounded-xl bg-gray-800 border-2 border-cyan-700 shadow-lg hidden">
+                <p class="text-sm font-medium text-gray-400 uppercase tracking-wider">Last Attempt Score</p>
+                <p id="currentScoreValue" class="text-4xl font-extrabold text-cyan-300 mt-1">--</p>
+                <p class="text-xs text-gray-500 mt-1">Goal: 8.5+ for Mission Complete!</p>
+            </div>
+
+
+            <!-- Loading Indicator -->
+            <div id="loading" class="hidden mt-4 text-center text-green-400 font-semibold">
+                <span class="inline-flex items-center">
+                    Analyzing Submission...
+                    <span class="loading-dot w-2 h-2 bg-green-400 rounded-full mx-1"></span>
+                    <span class="loading-dot w-2 h-2 bg-green-400 rounded-full mx-1"></span>
+                    <span class="loading-dot w-2 h-2 bg-green-400 rounded-full mx-1"></span>
+                </span>
+            </div>
+        </div>
+
+        <!-- Feedback Section -->
+        <div id="feedbackContainer" class="hidden card p-6 rounded-xl shadow-2xl">
+            <h2 class="text-3xl font-bold mb-4 text-cyan-400 border-b pb-2 border-cyan-700">
+                Tutor Feedback Report
+            </h2>
+            <div id="feedbackContent">
+                <!-- Content will be injected here -->
+            </div>
+            <div id="citationSection" class="mt-6 pt-4 border-t border-gray-700 text-sm text-gray-500">
+                <!-- Citations will be injected here if available -->
+            </div>
+        </div>
+
+        <!-- Error/Message Box -->
+        <div id="messageBox" class="hidden fixed bottom-4 right-4 p-4 rounded-lg shadow-lg text-white font-semibold"></div>
+    </div>
+
+    <!-- Firebase Imports and Setup -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, doc, getDoc, setDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+        
+        // --- Firebase Setup ---
+        
+        // Global variables MUST be defined for the script outside this module to access them
+        window.db = null;
+        window.auth = null;
+        window.userId = null;
+        window.appId = null;
+        window.lastScore = null; // Track last score globally
+
+        const saveStatusElement = document.getElementById('saveStatus');
+
+        // Function to save the latest text content (called on input)
+        async function performSave() {
+            if (!window.db || !window.userId) {
+                saveStatusElement.textContent = 'Status: Cannot save (Not authenticated).';
+                return;
+            }
+
+            const submissionData = {
+                vulnerabilities: document.getElementById('vulnerabilities').value.trim(),
+                hardware: document.getElementById('hardware').value.trim(),
+                software: document.getElementById('software').value.trim(),
+                procedural: document.getElementById('procedural').value.trim(),
+                // Do not overwrite lastScore here, only save text
+                updatedAt: new Date().toISOString()
+            };
+            
+            const docRef = doc(window.db, 'artifacts', window.appId, 'users', window.userId, 'submissions', 'scenario-analysis');
+            
+            try {
+                // Use setDoc with merge: true to avoid erasing the lastScore field
+                await setDoc(docRef, submissionData, { merge: true });
+                saveStatusElement.textContent = 'Status: All text changes saved!';
+            } catch (e) {
+                console.error("Error saving document:", e);
+                saveStatusElement.textContent = 'Status: Save failed!';
+            }
+        }
+
+        // Global function to save score after API call and update display
+        window.saveScore = async function(score) {
+            window.lastScore = score;
+            window.updateScoreDisplay(score); // Update the visual display immediately
+
+            if (!window.db || !window.userId) {
+                saveStatusElement.textContent = 'Status: Score not saved (Not authenticated).';
+                return;
+            }
+
+            const docRef = doc(window.db, 'artifacts', window.appId, 'users', window.userId, 'submissions', 'scenario-analysis');
+            
+            try {
+                // Only save the score and the update timestamp, merging with existing data
+                await setDoc(docRef, { lastScore: score, updatedAt: new Date().toISOString() }, { merge: true });
+                saveStatusElement.textContent = `Status: Score ${score}/10 saved. All changes saved!`;
+            } catch (e) {
+                console.error("Error saving score:", e);
+                saveStatusElement.textContent = 'Status: Score save failed!';
+            }
+        }
+
+
+        try {
+            // 1. Initialize Firebase
+            const firebaseConfig = JSON.parse(typeof __firebase_config !== 'undefined' ? __firebase_config : '{}');
+            window.appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
+
+            if (!firebaseConfig || Object.keys(firebaseConfig).length === 0) {
+                saveStatusElement.textContent = 'Status: Storage Unavailable (Missing Firebase Config)';
+            } else {
+                const app = initializeApp(firebaseConfig);
+                window.db = getFirestore(app);
+                window.auth = getAuth(app);
+            }
+
+            // 2. Handle Authentication
+            onAuthStateChanged(window.auth, async (user) => {
+                if (user) {
+                    window.userId = user.uid;
+                    saveStatusElement.textContent = 'Status: Ready. Changes save automatically.';
+                    loadSubmission();
+                    setupRealtimeSave(); // Start listening for changes after load
+                } else if (window.auth) {
+                    // Sign in anonymously if no user is found
+                    const initialAuthToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
+                    try {
+                        if (initialAuthToken) {
+                            await signInWithCustomToken(window.auth, initialAuthToken);
+                        } else {
+                            await signInAnonymously(window.auth);
+                        }
+                    } catch (error) {
+                        console.error("Firebase Auth Error:", error);
+                        saveStatusElement.textContent = 'Status: Authentication Failed.';
+                        window.userId = `anon-${crypto.randomUUID()}`; // Fallback ID
+                    }
+                }
+            });
+
+            // 3. Data Loading Function
+            async function loadSubmission() {
+                if (!window.db || !window.userId) return;
+
+                const docRef = doc(window.db, 'artifacts', window.appId, 'users', window.userId, 'submissions', 'scenario-analysis');
+
+                try {
+                    const docSnap = await getDoc(docRef);
+                    if (docSnap.exists()) {
+                        const data = docSnap.data();
+                        document.getElementById('vulnerabilities').value = data.vulnerabilities || '';
+                        document.getElementById('hardware').value = data.hardware || '';
+                        document.getElementById('software').value = data.software || '';
+                        document.getElementById('procedural').value = data.procedural || '';
+                        
+                        const lastScore = data.lastScore; // NEW: Load the last saved score
+                        if (lastScore) {
+                            window.lastScore = lastScore;
+                            window.updateScoreDisplay(lastScore); // Display it
+                        }
+
+                        saveStatusElement.textContent = 'Status: Loaded previous work. Changes save automatically.';
+                    } else {
+                        saveStatusElement.textContent = 'Status: New submission. Changes save automatically.';
+                    }
+                } catch (e) {
+                    console.error("Error loading document:", e);
+                    showMessage("Could not load previous work.", 'error');
+                }
+            }
+
+            // 4. Real-time Save Setup (Throttle saving to avoid excessive writes)
+            let saveTimeout;
+            
+            window.saveSubmission = function() {
+                saveStatusElement.textContent = 'Status: Saving...';
+                clearTimeout(saveTimeout);
+                saveTimeout = setTimeout(async () => {
+                    await performSave();
+                }, 1000); // Wait 1 second after last input to save
+            };
+
+            function setupRealtimeSave() {
+                // Ensures global access to the saving function
+            }
+
+        } catch (error) {
+            console.error("Initialization Error:", error);
+            saveStatusElement.textContent = 'Status: Initialization Failed.';
+        }
+    </script>
+    
+    <!-- Script continued from previous version (now using global context) -->
+    <script>
+        // Global variables for API calls
+        const apiKey = "";
+        const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${apiKey}`;
+
+        // --- UPDATED: Helper function to update the persistent score display (updated score threshold) ---
+        window.updateScoreDisplay = function(score) {
+            const display = document.getElementById('lastScoreDisplay');
+            const value = document.getElementById('currentScoreValue');
+            
+            // Format score to one decimal place
+            const formattedScore = parseFloat(score).toFixed(1);
+
+            value.textContent = `${formattedScore} / 10`;
+            display.classList.remove('hidden');
+
+            // Apply color coding based on score
+            if (score >= 8.5) { // CHANGED: Mission Complete threshold is now 8.5
+                value.classList.remove('text-cyan-300', 'text-yellow-400');
+                value.classList.add('text-green-400');
+                display.classList.remove('border-cyan-700', 'border-yellow-700');
+                display.classList.add('border-green-400');
+            } else if (score >= 7.0) {
+                value.classList.remove('text-cyan-300', 'text-green-400');
+                value.classList.add('text-yellow-400');
+                display.classList.remove('border-cyan-700', 'border-green-400');
+                display.classList.add('border-yellow-700');
+            } else {
+                value.classList.remove('text-yellow-400', 'text-green-400');
+                value.classList.add('text-cyan-300');
+                display.classList.remove('border-yellow-700', 'border-green-400');
+                display.classList.add('border-cyan-700');
+            }
+        };
+
+
+        /** Shows a temporary message box for errors or success. */
+        function showMessage(message, type = 'error') {
+            const box = document.getElementById('messageBox');
+            box.textContent = message;
+            box.className = `fixed bottom-4 right-4 p-4 rounded-xl shadow-2xl font-semibold transition-opacity duration-300 ${type === 'error' ? 'bg-red-600' : 'bg-green-600'}`;
+            box.classList.remove('hidden');
+            setTimeout(() => {
+                box.classList.add('hidden');
+            }, 5000);
+        }
+
+        /** Simple exponential backoff retry mechanism */
+        async function fetchWithRetry(url, options, maxRetries = 5) {
+            for (let i = 0; i < maxRetries; i++) {
+                try {
+                    const response = await fetch(url, options);
+                    if (response.status === 429 && i < maxRetries - 1) {
+                        const delay = Math.pow(2, i) * 1000 + Math.random() * 1000;
+                        await new Promise(resolve => setTimeout(resolve, delay));
+                        continue;
+                    }
+                    if (!response.ok) {
+                        throw new Error(`API returned status ${response.status}`);
+                    }
+                    return response;
+                } catch (error) {
+                    if (i === maxRetries - 1) {
+                        throw error;
+                    }
+                    const delay = Math.pow(2, i) * 1000 + Math.random() * 1000;
+                    await new Promise(resolve => setTimeout(resolve, delay));
+                }
+            }
+        }
+
+        /**
+         * Main function to gather input, call the Gemini API, and display feedback.
+         */
+        async function analyzeSubmission() {
+            const vulnerabilities = document.getElementById('vulnerabilities').value.trim();
+            const hardware = document.getElementById('hardware').value.trim();
+            const software = document.getElementById('software').value.trim();
+            const procedural = document.getElementById('procedural').value.trim();
+
+            if (!vulnerabilities || !hardware || !software || !procedural) {
+                showMessage("Please fill in all four sections before submitting.", 'error');
+                return;
+            }
+
+            // UI State change
+            document.getElementById('loading').classList.remove('hidden');
+            document.getElementById('submitButton').disabled = true;
+            document.getElementById('submitButton').textContent = 'Processing...';
+            document.getElementById('feedbackContainer').classList.add('hidden');
+
+            // System prompt remains the same
+            const systemPrompt = `You are an encouraging and knowledgeable 9th-grade level cybersecurity tutor. Your task is to analyze a student's submission for an ethical hacking scenario. The scenario involved weak physical security (unlocked server room with window), weak password policy (written sticky note), poor network security (free, unmanaged Wi-Fi), and no software updates or training. Provide constructive, positive, and clear feedback structured exactly according to the JSON schema. Use vocabulary and explanations appropriate for a 9th-grade student.`;
+
+            const userQuery = `
+                Scenario Summary: The school has serious vulnerabilities in physical security, weak password discipline, outdated server software (no updates for 3 years), unmanaged staff/student Wi-Fi, and minimal staff training.
+
+                Analyze the following student submission:
+
+                1. Identified Vulnerabilities:
+                ---
+                ${vulnerabilities}
+                ---
+
+                2. Proposed Hardware Solution:
+                ---
+                ${hardware}
+                ---
+
+                3. Proposed Software Solution:
+                ---
+                ${software}
+                ---
+
+                4. Proposed Procedural/Human Solution:
+                ---
+                ${procedural}
+                ---
+            `;
+
+            const payload = {
+                contents: [{ parts: [{ text: userQuery }] }],
+                systemInstruction: { parts: [{ text: systemPrompt }] },
+                // Requesting structured JSON output
+                generationConfig: {
+                    responseMimeType: "application/json",
+                    responseSchema: {
+                        type: "OBJECT",
+                        properties: {
+                            "overallScore": { "type": "NUMBER", "description": "A score out of 10 (e.g., 7.5) based on the completeness and logic of the submission." },
+                            "feedbackSummary": { "type": "STRING", "description": "A positive, encouraging, 9th-grade level summary of the submission's strengths and main areas for improvement." },
+                            "vulnerabilityCritique": { "type": "STRING", "description": "Critique on the identified vulnerabilities. Mention any obvious ones missed or suggest deeper analysis." },
+                            "solutionCritique": { "type": "STRING", "description": "Critique on the proposed multi-layered solution (Hardware, Software, Procedural)." },
+                            "nextSteps": { "type": "STRING", "description": "1-2 concrete, next steps or resources for the student to research (e.g., 'Research phishing attacks' or 'Look up what an IDS does')." }
+                        },
+                        required: ["overallScore", "feedbackSummary", "vulnerabilityCritique", "solutionCritique", "nextSteps"]
+                    }
+                }
+            };
+
+            try {
+                const response = await fetchWithRetry(apiUrl, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+
+                const result = await response.json();
+                const jsonText = result.candidates?.[0]?.content?.parts?.[0]?.text;
+
+                if (!jsonText) {
+                    throw new Error("Tutor failed to generate a valid response.");
+                }
+
+                const feedback = JSON.parse(jsonText);
+                
+                // Save the score and update the persistent display
+                window.saveScore(feedback.overallScore);
+                
+                displayFeedback(feedback);
+
+            } catch (error) {
+                console.error('Error during API call or parsing:', error);
+                showMessage(`Sorry, an error occurred while getting feedback: ${error.message}. Please try again.`, 'error');
+            } finally {
+                // Reset UI state
+                document.getElementById('loading').classList.add('hidden');
+                document.getElementById('submitButton').disabled = false;
+                document.getElementById('submitButton').textContent = 'Submit for Tutor Feedback';
+            }
+        }
+
+        /**
+         * Renders the structured feedback received from the API.
+         */
+        function displayFeedback(feedback) {
+            const score = feedback.overallScore;
+            const container = document.getElementById('feedbackContent');
+            const feedbackContainer = document.getElementById('feedbackContainer');
+
+            feedbackContainer.classList.remove('hidden');
+
+            if (score >= 8.5) { // Check for 8.5 or higher
+                // High Score (>= 8.5): Show celebratory message
+                // Hide the main heading since the content will have its own title
+                document.querySelector('#feedbackContainer > h2').classList.add('hidden');
+                
+                container.innerHTML = `
+                    <div class="text-center p-8 bg-green-800/50 rounded-xl shadow-inner border border-green-400">
+                        <svg class="mx-auto h-16 w-16 text-green-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                        <h3 class="text-4xl font-extrabold text-green-300 mt-4">MISSION COMPLETE!</h3>
+                        <p class="mt-2 text-xl text-gray-300">
+                            Your analysis and proposed security solution are **outstanding** and demonstrate a deep understanding of multi-layered defense. You earned a top-tier score!
+                        </p>
+                        <p class="mt-6 text-3xl font-semibold text-yellow-400">
+                            Final Score: ${parseFloat(score).toFixed(1)} / 10
+                        </p>
+                    </div>
+                    <div class="mt-6 p-4 rounded-lg bg-gray-700/50">
+                        <h3 class="text-xl font-bold text-cyan-300">Tutor's Final Note</h3>
+                        <p class="mt-2 text-gray-300">${feedback.feedbackSummary}</p>
+                        <p class="mt-4 text-gray-400">Keep up the great work in cybersecurity!</p>
+                    </div>
+                `;
+
+            } else {
+                // Regular Score (< 8.5): Show detailed critique
+                document.querySelector('#feedbackContainer > h2').classList.remove('hidden');
+                container.innerHTML = `
+                    <div class="mb-6 p-4 rounded-lg bg-green-900/40 border-l-4 border-green-400">
+                        <h3 class="text-xl font-bold text-green-300">Overall Score: ${parseFloat(score).toFixed(1)} / 10</h3>
+                        <p class="mt-2 text-gray-300">${feedback.feedbackSummary}</p>
+                    </div>
+
+                    <!-- Vulnerability Critique -->
+                    <div class="mb-4">
+                        <h3 class="text-xl font-bold text-yellow-300">1. Vulnerability Analysis Check</h3>
+                        <p class="mt-2 text-gray-300">${feedback.vulnerabilityCritique}</p>
+                    </div>
+
+                    <!-- Solution Critique -->
+                    <div class="mb-4">
+                        <h3 class="text-xl font-bold text-blue-300">2. Multi-Layered Solution Review</h3>
+                        <p class="mt-2 text-gray-300">${feedback.solutionCritique}</p>
+                    </div>
+
+                    <!-- Next Steps -->
+                    <div class="mb-4 p-4 rounded-lg bg-gray-700/50">
+                        <h3 class="text-xl font-bold text-cyan-300">Next Steps & Research</h3>
+                        <p class="mt-2 text-gray-300">${feedback.nextSteps}</p>
+                    </div>
+                `;
+            }
+        }
+    </script>
+</body>
+</html>
